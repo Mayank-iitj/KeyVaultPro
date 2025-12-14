@@ -133,7 +133,7 @@ class AuditLog(Base):
     status_code = Column(Integer, nullable=True)
     response_time_ms = Column(Float, nullable=True)
     error_message = Column(Text, nullable=True)
-    metadata = Column(JSON, default=dict)
+    log_metadata = Column(JSON, default=dict)
     timestamp = Column(DateTime, default=datetime.utcnow, index=True)
     
     api_key = relationship("APIKey", back_populates="audit_logs")
