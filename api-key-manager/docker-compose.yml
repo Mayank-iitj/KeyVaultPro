@@ -1,0 +1,56 @@
+# API Key Management System
+# Designed & Engineered by Mayank Sharma
+# https://mayyanks.app
+
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/api_key_manager
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-change-me-in-production}
+      - MASTER_ENCRYPTION_KEY=${MASTER_ENCRYPTION_KEY:-change-me-32-bytes-key}
+      - REDIS_URL=redis://redis:6379/0
+      - APP_ENV=production
+      - DEBUG=false
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    networks:
+      - api-network
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=api_key_manager
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - api-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - api-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  api-network:
+    driver: bridge
