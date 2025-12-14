@@ -28,8 +28,8 @@ export default function Home() {
             Generate, rotate, and monitor your API keys with fine-grained permissions.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <a href="#demo" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
-              Try Live Demo
+            <a href="#quickstart" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
+              Get Started
             </a>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="px-6 py-3 border border-zinc-700 hover:border-indigo-500 rounded-lg font-medium transition-colors">
               View on GitHub
