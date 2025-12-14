@@ -270,7 +270,7 @@ export default function WorkflowDemo() {
   };
 
   return (
-    <section className="py-20 px-6 bg-gradient-to-b from-[#12121a] to-[#0a0a0f]">
+    <section id="demo" className="py-20 px-6 bg-gradient-to-b from-[#12121a] to-[#0a0a0f]">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
