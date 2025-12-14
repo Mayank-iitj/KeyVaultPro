@@ -1,3 +1,5 @@
+import WorkflowDemo from '@/components/WorkflowDemo';
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
@@ -34,6 +36,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <WorkflowDemo />
 
       <section id="features" className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
