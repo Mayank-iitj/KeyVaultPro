@@ -41,7 +41,7 @@ class KeyGenerator:
     def is_valid_key_format(cls, api_key: str) -> bool:
         if not api_key or cls.SEPARATOR not in api_key:
             return False
-        parts = api_key.split(cls.SEPARATOR)
+        parts = api_key.split(cls.SEPARATOR, 1)
         if len(parts) != 2:
             return False
         prefix, body = parts
