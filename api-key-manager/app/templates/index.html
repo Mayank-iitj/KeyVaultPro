@@ -1,0 +1,199 @@
+<!--
+API Key Management System
+Designed & Engineered by Mayank Sharma
+https://mayyanks.app
+-->
+{% extends "base.html" %}
+
+{% block title %}API Key Management System{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .hero {
+        padding: 100px 0;
+        text-align: center;
+        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    }
+    
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--accent) 0%, #a855f7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .hero p {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto 40px;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+    }
+    
+    .features {
+        padding: 80px 0;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+    }
+    
+    .feature-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 30px;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 12px;
+    }
+    
+    .feature-card p {
+        color: var(--text-secondary);
+    }
+    
+    .section-title {
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 50px;
+    }
+    
+    .code-block {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
+        overflow-x: auto;
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 14px;
+        margin: 20px 0;
+    }
+    
+    .code-block code {
+        color: #22c55e;
+    }
+    
+    .api-section {
+        padding: 60px 0;
+        background: var(--bg-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>🔐 API Key Management System</h1>
+        <p>
+            A production-ready, secure API key management solution. 
+            Generate, rotate, and monitor your API keys with fine-grained permissions.
+        </p>
+        <div class="hero-buttons">
+            <a href="/docs" class="btn btn-primary">View API Documentation</a>
+            <a href="/dashboard" class="btn btn-secondary">Go to Dashboard</a>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔑</div>
+                <h3>Secure Key Generation</h3>
+                <p>Cryptographically secure API key generation. Keys are shown once and stored as hashed values.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Fine-Grained Permissions</h3>
+                <p>Scope-based access control with read, write, delete, and admin permissions per key.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Key Rotation</h3>
+                <p>Automatic and manual key rotation with configurable grace periods for seamless transitions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Usage Monitoring</h3>
+                <p>Comprehensive audit logs tracking every API key usage with IP, endpoint, and response times.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Rate Limiting</h3>
+                <p>Token bucket rate limiting with per-key and global limits to prevent abuse.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Security Insights</h3>
+                <p>Anomaly detection using statistical analysis to identify suspicious usage patterns.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="api-section">
+    <div class="container">
+        <h2 class="section-title">Quick Start</h2>
+        
+        <div class="card">
+            <h3>1. Register a User</h3>
+            <div class="code-block">
+                <code>curl -X POST "http://localhost:8000/api/v1/auth/register" \
+     -H "Content-Type: application/json" \
+     -d '{"email": "user@example.com", "username": "myuser", "password": "SecurePass123!"}'</code>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>2. Login to Get Token</h3>
+            <div class="code-block">
+                <code>curl -X POST "http://localhost:8000/api/v1/auth/login" \
+     -H "Content-Type: application/json" \
+     -d '{"email": "user@example.com", "password": "SecurePass123!"}'</code>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>3. Create an API Key</h3>
+            <div class="code-block">
+                <code>curl -X POST "http://localhost:8000/api/v1/keys" \
+     -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"name": "My API Key", "permissions": ["read", "write"]}'</code>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>4. Use the API Key</h3>
+            <div class="code-block">
+                <code>curl -X GET "http://localhost:8000/api/v1/protected/test" \
+     -H "X-API-Key: akm_YOUR_API_KEY_HERE"</code>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
