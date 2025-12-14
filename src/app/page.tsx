@@ -10,6 +10,7 @@ export default function Home() {
             <span className="text-white">API Key Manager</span>
           </a>
           <nav className="flex gap-6">
+            <a href="#demo" className="text-zinc-400 hover:text-indigo-400 transition-colors">Live Demo</a>
             <a href="#features" className="text-zinc-400 hover:text-indigo-400 transition-colors">Features</a>
             <a href="#quickstart" className="text-zinc-400 hover:text-indigo-400 transition-colors">Quick Start</a>
             <a href="https://mayyanks.app" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-indigo-400 transition-colors">Author</a>
@@ -27,8 +28,8 @@ export default function Home() {
             Generate, rotate, and monitor your API keys with fine-grained permissions.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <a href="#quickstart" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
-              Get Started
+            <a href="#demo" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
+              Try Live Demo
             </a>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="px-6 py-3 border border-zinc-700 hover:border-indigo-500 rounded-lg font-medium transition-colors">
               View on GitHub
