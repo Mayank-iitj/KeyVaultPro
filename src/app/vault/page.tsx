@@ -43,6 +43,7 @@ export default function VaultPage() {
   const [error, setError] = useState('');
   const [autoLockTimer, setAutoLockTimer] = useState<NodeJS.Timeout | null>(null);
   const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
+  const [showDemoWarning, setShowDemoWarning] = useState(true);
 
   const [newVault, setNewVault] = useState({
     platformName: '',
@@ -309,6 +310,26 @@ export default function VaultPage() {
   if (!isInitialized) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
+        {showDemoWarning && (
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 max-w-2xl w-full mx-auto px-6">
+            <div className="bg-amber-500/10 border border-amber-500 rounded-xl p-4 flex items-start gap-3 backdrop-blur-sm">
+              <span className="text-2xl">⚠️</span>
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-400 mb-1">Demo Mode Active</h3>
+                <p className="text-sm text-amber-200/90">
+                  Demo Passwords generated for prototype. Actual System may differ.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDemoWarning(false)}
+                className="text-amber-400 hover:text-amber-300 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="max-w-md w-full bg-[#1a1a24] border border-zinc-800 rounded-2xl p-8">
           <div className="text-center mb-8">
             <div className="text-6xl mb-4">🔐</div>
@@ -442,6 +463,26 @@ export default function VaultPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
+      {showDemoWarning && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 max-w-2xl w-full mx-auto px-6">
+          <div className="bg-amber-500/10 border border-amber-500 rounded-xl p-4 flex items-start gap-3 backdrop-blur-sm">
+            <span className="text-2xl">⚠️</span>
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-400 mb-1">Demo Mode Active</h3>
+              <p className="text-sm text-amber-200/90">
+                Demo Passwords generated for prototype. Actual System may differ.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowDemoWarning(false)}
+              className="text-amber-400 hover:text-amber-300 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+      
       <header className="border-b border-zinc-800 bg-[#12121a] sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
