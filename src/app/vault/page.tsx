@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   encryptData,
@@ -32,8 +32,11 @@ interface VaultItem {
 
 export default function VaultPage() {
   const router = useRouter();
+  const [userId, setUserId] = useState<string>('');
+  const [isInitialized, setIsInitialized] = useState<boolean | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [masterPassword, setMasterPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [vaults, setVaults] = useState<VaultItem[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,6 +54,69 @@ export default function VaultPage() {
     environment: 'production',
     tags: [] as string[],
   });
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId') || crypto.randomUUID();
+    localStorage.setItem('userId', storedUserId);
+    setUserId(storedUserId);
+    
+    checkInitialization(storedUserId);
+  }, []);
+
+  const checkInitialization = async (uid: string) => {
+    try {
+      const response = await fetch('/api/vault/check-init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: uid }),
+      });
+      const data = await response.json();
+      setIsInitialized(data.initialized);
+    } catch (err) {
+      console.error('Failed to check initialization:', err);
+      setIsInitialized(false);
+    }
+  };
+
+  const createMasterPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const validation = validateMasterPassword(masterPassword);
+      if (!validation.valid) {
+        setError(validation.errors.join('. '));
+        setLoading(false);
+        return;
+      }
+
+      if (masterPassword !== confirmPassword) {
+        setError('Passwords do not match');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/vault/init-master', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, masterPassword }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsInitialized(true);
+        setConfirmPassword('');
+      } else {
+        setError(data.error);
+      }
+    } catch (err) {
+      setError('Failed to create master password');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetAutoLock = () => {
     if (autoLockTimer) clearTimeout(autoLockTimer);
@@ -216,6 +282,80 @@ export default function VaultPage() {
       setError('Failed to delete vault');
     }
   };
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
+        <div className="max-w-md w-full bg-[#1a1a24] border border-zinc-800 rounded-2xl p-8">
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-4">🔐</div>
+            <h1 className="text-3xl font-bold mb-2">Secure API Vault</h1>
+            <p className="text-zinc-400 text-sm">
+              Zero-Knowledge Encryption • NoTrust Architecture
+            </p>
+          </div>
+
+          <form onSubmit={createMasterPassword} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Master Password
+              </label>
+              <input
+                type="password"
+                value={masterPassword}
+                onChange={(e) => setMasterPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-[#0a0a0f] border border-zinc-700 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                placeholder="Enter your master password"
+                required
+              />
+              <p className="text-xs text-zinc-500 mt-2">
+                Minimum 16 chars • Uppercase • Lowercase • Numbers • Symbols
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-[#0a0a0f] border border-zinc-700 rounded-lg text-white focus:border-indigo-500 focus:outline-none"
+                placeholder="Confirm your master password"
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500 rounded-lg p-3 text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-700 rounded-lg font-medium transition-colors"
+            >
+              {loading ? 'Creating Master Password...' : 'Create Master Password'}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-zinc-800">
+            <h3 className="text-sm font-semibold mb-3">Security Features</h3>
+            <ul className="space-y-2 text-xs text-zinc-400">
+              <li>✓ AES-256-GCM client-side encryption</li>
+              <li>✓ 600,000 PBKDF2 iterations</li>
+              <li>✓ Auto-lock after 5 minutes</li>
+              <li>✓ Server never sees unencrypted keys</li>
+              <li>✓ Full audit trail</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!isUnlocked) {
     return (
