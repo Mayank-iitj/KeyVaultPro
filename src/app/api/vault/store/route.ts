@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
       action: 'store',
       ip_address: ip,
       user_agent: userAgent,
+      success: true,
       metadata: { platform_name: platformName, key_type: keyType },
     });
 
