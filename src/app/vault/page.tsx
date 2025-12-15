@@ -147,7 +147,25 @@ export default function VaultPage() {
         return;
       }
 
-      const response = await fetch(`/api/vault/list`);
+      const verifyResponse = await fetch('/api/vault/verify-master', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, masterPassword }),
+      });
+
+      const verifyData = await verifyResponse.json();
+
+      if (!verifyData.valid) {
+        setError('Invalid master password');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`/api/vault/list`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
       const data = await response.json();
 
       if (data.success) {
