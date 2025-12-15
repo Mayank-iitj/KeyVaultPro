@@ -118,6 +118,12 @@ export default function DashboardPage() {
               Welcome, <span className="text-white font-medium">{user.username}</span>
             </div>
             <button
+              onClick={() => router.push('/vault')}
+              className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors"
+            >
+              🔐 Secure Vault
+            </button>
+            <button
               onClick={logout}
               className="px-4 py-2 text-sm text-zinc-400 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-lg transition-colors"
             >
