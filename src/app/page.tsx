@@ -18,12 +18,6 @@ export default function Home() {
             <Link href="/vault" className="px-4 py-2 text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg font-medium transition-colors flex items-center gap-2">
               🔐 Secure Vault
             </Link>
-            <Link href="/login" className="px-4 py-2 text-sm text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-lg transition-colors">
-              Login
-            </Link>
-            <Link href="/signup" className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
-              Sign Up
-            </Link>
           </nav>
         </div>
       </header>
