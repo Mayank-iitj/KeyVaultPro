@@ -29,6 +29,10 @@ export default function WorkflowDemo() {
   const [randomEmail, setRandomEmail] = useState('');
   const [randomUsername, setRandomUsername] = useState('');
   const [randomPassword, setRandomPassword] = useState('');
+  const [showPinDialog, setShowPinDialog] = useState(false);
+  const [userPinInput, setUserPinInput] = useState('');
+  const [pinError, setPinError] = useState('');
+  const [pendingResolve, setPendingResolve] = useState<(() => void) | null>(null);
 
   const updateStep = (id: number, updates: Partial<DemoStep>) => {
     setSteps(prev => prev.map(step => 
@@ -56,6 +60,29 @@ export default function WorkflowDemo() {
       key += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return key;
+  };
+
+  const waitForUserPin = (): Promise<void> => {
+    return new Promise((resolve) => {
+      setShowPinDialog(true);
+      setUserPinInput('');
+      setPinError('');
+      setPendingResolve(() => resolve);
+    });
+  };
+
+  const handlePinSubmit = () => {
+    if (userPinInput === pin) {
+      setPinError('');
+      setShowPinDialog(false);
+      setUserPinInput('');
+      if (pendingResolve) {
+        pendingResolve();
+        setPendingResolve(null);
+      }
+    } else {
+      setPinError('❌ Incorrect PIN. Please try again.');
+    }
   };
 
   const runDemo = async () => {
@@ -177,7 +204,9 @@ export default function WorkflowDemo() {
         }
       });
       
-      await sleep(1000);
+      await sleep(500);
+      
+      await waitForUserPin();
       
       updateStep(5, { status: 'loading', description: 'Verifying PIN to reveal API key...' });
       await sleep(1200);
@@ -272,6 +301,9 @@ export default function WorkflowDemo() {
     setRandomEmail('');
     setRandomUsername('');
     setRandomPassword('');
+    setShowPinDialog(false);
+    setUserPinInput('');
+    setPinError('');
   };
 
   const getStatusIcon = (status: string) => {
@@ -311,6 +343,52 @@ export default function WorkflowDemo() {
             </button>
           </div>
         </div>
+
+        {showPinDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in">
+            <div className="bg-[#1a1a24] border border-indigo-500 rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl shadow-indigo-500/20 animate-scale-in">
+              <div className="text-center mb-6">
+                <div className="text-5xl mb-4">🔐</div>
+                <h3 className="text-2xl font-bold text-white mb-2">PIN Required</h3>
+                <p className="text-zinc-400 text-sm">
+                  Step 4 completed! Enter the generated PIN to continue to Step 5
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <label className="text-sm text-zinc-400 block mb-2">Enter 6-digit PIN:</label>
+                <input
+                  type="text"
+                  maxLength={6}
+                  value={userPinInput}
+                  onChange={(e) => setUserPinInput(e.target.value.replace(/\D/g, ''))}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handlePinSubmit();
+                  }}
+                  placeholder="000000"
+                  className="w-full px-4 py-3 bg-[#0a0a0f] border border-zinc-700 rounded-lg text-white text-center text-2xl tracking-widest focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  autoFocus
+                />
+                {pinError && (
+                  <p className="text-red-400 text-sm mt-2 text-center">{pinError}</p>
+                )}
+              </div>
+
+              <div className="bg-[#0a0a0f] border border-zinc-800 rounded-lg p-4 mb-6">
+                <p className="text-xs text-zinc-500 text-center mb-2">💡 Hint: Check the Session Credentials below</p>
+                <p className="text-sm text-yellow-400 text-center font-mono">{pin}</p>
+              </div>
+
+              <button
+                onClick={handlePinSubmit}
+                disabled={userPinInput.length !== 6}
+                className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:from-zinc-700 disabled:to-zinc-800 rounded-lg font-medium transition-all disabled:cursor-not-allowed"
+              >
+                {userPinInput.length !== 6 ? '⏳ Enter 6 digits...' : '✅ Verify PIN & Continue'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-6">
           {steps.map((step, index) => (
