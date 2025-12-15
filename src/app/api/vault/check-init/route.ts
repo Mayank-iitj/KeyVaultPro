@@ -18,15 +18,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: users, error } = await supabase
+    // DEMO MODE: Reset vault on every visit
+    // Delete all vault items for this user
+    await supabase
+      .from('vault_items')
+      .delete()
+      .eq('user_id', userId);
+
+    // Check if user exists
+    const { data: users } = await supabase
       .from('users')
-      .select('vault_initialized')
+      .select('id')
       .eq('id', userId);
 
-    if (error) throw error;
-
     if (!users || users.length === 0) {
-      const { error: insertError } = await supabase
+      // Create new user
+      await supabase
         .from('users')
         .insert({
           id: userId,
@@ -34,14 +41,24 @@ export async function POST(request: NextRequest) {
           username: `vault-user-${userId.slice(0, 8)}`,
           password_hash: 'temp',
           vault_initialized: false,
+          master_password_hash: null,
         });
-      
-      if (insertError) throw insertError;
-      
-      return NextResponse.json({ initialized: false });
+    } else {
+      // Reset existing user's vault
+      await supabase
+        .from('users')
+        .update({
+          vault_initialized: false,
+          master_password_hash: null,
+        })
+        .eq('id', userId);
     }
 
-    return NextResponse.json({ initialized: users[0]?.vault_initialized || false });
+    // Always return not initialized to force password creation
+    return NextResponse.json({ 
+      initialized: false,
+      demoMode: true 
+    });
   } catch (error) {
     console.error('Check init error:', error);
     return NextResponse.json(
