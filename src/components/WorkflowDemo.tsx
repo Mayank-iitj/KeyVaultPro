@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import bcrypt from 'bcrypt';
 
 interface DemoStep {
   id: number;
@@ -73,22 +71,24 @@ export default function WorkflowDemo() {
       updateStep(1, { status: 'loading', description: 'Registering new user with randomized credentials...' });
       await sleep(800);
       
-      const passwordHash = await bcrypt.hash(credentials.password, 10);
-      
-      const { data: userData, error: registerError } = await supabase
-        .from('users')
-        .insert({
+      const registerRes = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           email: credentials.email,
           username: credentials.username,
-          password_hash: passwordHash,
-          role: 'user'
-        })
-        .select()
-        .single();
+          password: credentials.password,
+        }),
+      });
       
-      if (registerError) throw new Error(registerError.message);
+      if (!registerRes.ok) {
+        const error = await registerRes.json();
+        throw new Error(error.error || 'Registration failed');
+      }
       
+      const userData = await registerRes.json();
       setUserId(userData.id);
+      
       updateStep(1, { 
         status: 'success', 
         description: `User registered: ${credentials.email}`,
@@ -101,22 +101,27 @@ export default function WorkflowDemo() {
       updateStep(2, { status: 'loading', description: 'Authenticating user...' });
       await sleep(800);
       
-      const { data: loginUser, error: loginError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', credentials.email)
-        .single();
+      const loginRes = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
+      });
       
-      if (loginError || !loginUser) throw new Error('Login failed');
+      if (!loginRes.ok) {
+        const error = await loginRes.json();
+        throw new Error(error.error || 'Login failed');
+      }
       
-      const passwordMatch = await bcrypt.compare(credentials.password, loginUser.password_hash);
-      if (!passwordMatch) throw new Error('Invalid credentials');
+      const loginData = await loginRes.json();
       
       updateStep(2, { 
         status: 'success', 
         description: `Logged in as ${credentials.email}`,
-        code: `User ID: ${loginUser.id}\nRole: ${loginUser.role}`,
-        response: { user_id: loginUser.id, email: loginUser.email, role: loginUser.role }
+        code: `User ID: ${loginData.user_id}\nRole: ${loginData.role}`,
+        response: { user_id: loginData.user_id, email: loginData.email, role: loginData.role }
       });
       
       await sleep(1000);
@@ -137,46 +142,36 @@ export default function WorkflowDemo() {
       await sleep(1000);
       
       const generatedKey = generateApiKey();
-      const keyHash = await bcrypt.hash(generatedKey, 10);
-      const pinHash = await bcrypt.hash(credentials.pin, 10);
       
-      const { data: keyData, error: keyError } = await supabase
-        .from('api_keys')
-        .insert({
-          user_id: userData.id,
+      const createKeyRes = await fetch('/api/keys/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userData.id,
           name: `Demo Key ${new Date().toLocaleTimeString()}`,
-          key_hash: keyHash,
-          key_preview: generatedKey.substring(0, 12) + '...',
+          apiKey: generatedKey,
+          pin: credentials.pin,
           permissions: ['read', 'write'],
-          pin_hash: pinHash,
-          is_active: true,
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        })
-        .select()
-        .single();
+        }),
+      });
       
-      if (keyError) throw new Error(keyError.message);
+      if (!createKeyRes.ok) {
+        const error = await createKeyRes.json();
+        throw new Error(error.error || 'Key creation failed');
+      }
       
+      const keyData = await createKeyRes.json();
       setApiKeyId(keyData.id);
       setApiKey(generatedKey);
-      
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: userData.id,
-          api_key_id: keyData.id,
-          action: 'API_KEY_CREATED',
-          metadata: { key_name: keyData.name, permissions: keyData.permissions }
-        });
       
       updateStep(4, { 
         status: 'success', 
         description: `API Key created and encrypted!`,
-        code: `Key ID: ${keyData.id}\nPreview: ${keyData.key_preview}\nPermissions: ${keyData.permissions.join(', ')}`,
+        code: `Key ID: ${keyData.id}\nPreview: ${keyData.preview}\nPermissions: ${keyData.permissions.join(', ')}`,
         response: { 
           id: keyData.id, 
           name: keyData.name, 
-          preview: keyData.key_preview,
+          preview: keyData.preview,
           permissions: keyData.permissions,
           message: '🔒 Full key hidden - PIN required to view'
         }
@@ -187,25 +182,22 @@ export default function WorkflowDemo() {
       updateStep(5, { status: 'loading', description: 'Verifying PIN to reveal API key...' });
       await sleep(1200);
       
-      const { data: storedKey } = await supabase
-        .from('api_keys')
-        .select('pin_hash')
-        .eq('id', keyData.id)
-        .single();
+      const verifyPinRes = await fetch('/api/keys/verify-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          keyId: keyData.id,
+          pin: credentials.pin,
+          userId: userData.id,
+        }),
+      });
       
-      if (!storedKey) throw new Error('Key not found');
+      if (!verifyPinRes.ok) {
+        const error = await verifyPinRes.json();
+        throw new Error(error.error || 'PIN verification failed');
+      }
       
-      const pinMatch = await bcrypt.compare(credentials.pin, storedKey.pin_hash);
-      if (!pinMatch) throw new Error('Invalid PIN');
-      
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: userData.id,
-          api_key_id: keyData.id,
-          action: 'API_KEY_VIEWED',
-          metadata: { verification: 'PIN_VERIFIED' }
-        });
+      const pinVerifyData = await verifyPinRes.json();
       
       updateStep(5, { 
         status: 'success', 
@@ -224,31 +216,22 @@ export default function WorkflowDemo() {
       updateStep(6, { status: 'loading', description: 'Testing API key with protected endpoint...' });
       await sleep(800);
       
-      const { data: verifyKey } = await supabase
-        .from('api_keys')
-        .select('*')
-        .eq('id', keyData.id)
-        .eq('is_active', true)
-        .single();
+      const testKeyRes = await fetch('/api/keys/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          keyId: keyData.id,
+          apiKey: generatedKey,
+          userId: userData.id,
+        }),
+      });
       
-      if (!verifyKey) throw new Error('Invalid API key');
+      if (!testKeyRes.ok) {
+        const error = await testKeyRes.json();
+        throw new Error(error.error || 'API key test failed');
+      }
       
-      const keyMatch = await bcrypt.compare(generatedKey, verifyKey.key_hash);
-      if (!keyMatch) throw new Error('API key verification failed');
-      
-      await supabase
-        .from('api_keys')
-        .update({ last_used_at: new Date().toISOString() })
-        .eq('id', keyData.id);
-      
-      await supabase
-        .from('audit_logs')
-        .insert({
-          user_id: userData.id,
-          api_key_id: keyData.id,
-          action: 'API_ENDPOINT_ACCESSED',
-          metadata: { endpoint: '/protected/test', method: 'GET', status: 'success' }
-        });
+      const testData = await testKeyRes.json();
       
       updateStep(6, { 
         status: 'success', 
@@ -258,8 +241,8 @@ export default function WorkflowDemo() {
           success: true, 
           message: 'API key validated',
           user_id: userData.id,
-          permissions: verifyKey.permissions,
-          timestamp: new Date().toISOString()
+          permissions: testData.permissions,
+          timestamp: testData.timestamp
         }
       });
       
