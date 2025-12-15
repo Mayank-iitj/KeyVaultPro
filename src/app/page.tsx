@@ -52,15 +52,15 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
+              { icon: "🔐", title: "Ultra-Secure API Vault", desc: "Zero-knowledge client-side encryption with AES-256-GCM. Server never sees your unencrypted API keys. NoTrust architecture." },
+              { icon: "🛡️", title: "Master Password Protection", desc: "600,000 PBKDF2 iterations for key derivation. Auto-locks after 5 minutes of inactivity. Enterprise-grade security." },
               { icon: "🔑", title: "Secure Key Generation", desc: "Cryptographically secure API keys using Python's secrets module. Keys shown once and stored as SHA-256 hashes." },
-              { icon: "🛡️", title: "Fine-Grained Permissions", desc: "Scope-based access control with read, write, delete, and admin permissions per key." },
+              { icon: "🎯", title: "Fine-Grained Permissions", desc: "Scope-based access control with read, write, delete, and admin permissions per key." },
               { icon: "🔄", title: "Key Rotation", desc: "Manual and automatic rotation with configurable grace periods for seamless transitions." },
               { icon: "📊", title: "Usage Monitoring", desc: "Comprehensive audit logs tracking every API key usage with IP, endpoint, and response times." },
               { icon: "⚡", title: "Rate Limiting", desc: "Token bucket algorithm with per-key and global limits. Auto-block on abuse." },
               { icon: "🤖", title: "AI Security Insights", desc: "Anomaly detection using statistical analysis to identify suspicious usage patterns." },
               { icon: "👥", title: "RBAC", desc: "Role-Based Access Control with Admin, Developer, and Read-Only roles." },
-              { icon: "🔒", title: "Zero-Trust Design", desc: "Keys scoped to IP ranges, user agents, and environments (dev/staging/prod)." },
-              { icon: "📱", title: "Python Dashboard", desc: "Admin dashboard built with Jinja2 templates. No JavaScript frameworks required." },
             ].map((feature, i) => (
               <div key={i} className="bg-[#1a1a24] border border-zinc-800 rounded-xl p-6 hover:border-indigo-500/50 transition-colors">
                 <div className="text-4xl mb-4">{feature.icon}</div>
