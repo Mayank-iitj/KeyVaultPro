@@ -25,20 +25,20 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="py-24 px-6 text-center bg-gradient-to-b from-[#12121a] to-[#0a0a0f]">
+      <section className="py-24 px-6 text-center bg-gradient-to-b from-[#12121a] to-[#0a0a0f] overflow-hidden">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             API Key Management System
           </h1>
-          <p className="text-xl text-zinc-400 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl text-zinc-400 mb-10 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             A production-ready, secure API key management solution built entirely with Python. 
             Generate, rotate, and monitor your API keys with fine-grained permissions.
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-4 justify-center flex-wrap animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
             <a href="#demo" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
               Try Live Demo
             </a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="px-6 py-3 border border-zinc-700 hover:border-indigo-500 rounded-lg font-medium transition-colors">
+            <a href="https://github.com/Mayank-iitj/api-key-manager-msiitj" target="_blank" rel="noopener noreferrer" className="px-6 py-3 border border-zinc-700 hover:border-indigo-500 rounded-lg font-medium transition-colors">
               View on GitHub
             </a>
           </div>
