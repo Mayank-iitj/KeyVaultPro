@@ -6,15 +6,19 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const userId = request.nextUrl.searchParams.get('userId');
+    const body = await request.json();
+    const { userId } = body;
 
     if (!userId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'User ID required' },
+        { status: 400 }
+      );
     }
 
-    const { data, error } = await supabase
+    const { data: vaults, error } = await supabase
       .from('api_vault')
       .select('*')
       .eq('user_id', userId)
@@ -23,21 +27,11 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error;
 
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    const userAgent = request.headers.get('user-agent') || 'unknown';
-
-    await supabase.from('vault_audit_log').insert({
-      user_id: userId,
-      action: 'list',
-      ip_address: ip,
-      user_agent: userAgent,
-    });
-
-    return NextResponse.json({ success: true, vaults: data });
+    return NextResponse.json({ success: true, vaults: vaults || [] });
   } catch (error: unknown) {
     console.error('Vault list error:', error);
     return NextResponse.json(
-      { error: 'Failed to retrieve vaults' },
+      { error: 'Failed to list vault items' },
       { status: 500 }
     );
   }
