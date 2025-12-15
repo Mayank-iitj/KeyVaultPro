@@ -5,6 +5,9 @@ import { AuthProvider } from '@/contexts/AuthContext';
 export const metadata: Metadata = {
   title: "API Key Manager - Secure API Key Management System",
   description: "A production-ready, secure API key management solution with PIN authentication, audit logs, and fine-grained permissions.",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
