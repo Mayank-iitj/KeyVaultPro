@@ -42,6 +42,7 @@ export async function DELETE(request: NextRequest) {
       action: 'delete',
       ip_address: ip,
       user_agent: userAgent,
+      success: true,
       metadata: { platform_name: vault?.platform_name },
     });
 
