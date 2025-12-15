@@ -295,7 +295,7 @@ export default function VaultPage() {
       const response = await fetch('/api/vault/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vaultId }),
+        body: JSON.stringify({ vaultId, userId }),
       });
 
       if (response.ok) {
