@@ -198,6 +198,7 @@ export default function VaultPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          userId,
           platformName: newVault.platformName,
           accountIdentifier: newVault.accountIdentifier,
           encryptedApiKey: encryptedKey.encrypted,
@@ -214,7 +215,11 @@ export default function VaultPage() {
       const data = await response.json();
 
       if (data.success) {
-        const listResponse = await fetch(`/api/vault/list`);
+        const listResponse = await fetch(`/api/vault/list`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId }),
+        });
         const listData = await listResponse.json();
         setVaults(listData.vaults);
         setShowAddForm(false);
