@@ -18,15 +18,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: user, error } = await supabase
+    const { data: users, error } = await supabase
       .from('users')
       .select('vault_initialized')
-      .eq('id', userId)
-      .single();
+      .eq('id', userId);
 
     if (error) throw error;
 
-    return NextResponse.json({ initialized: user?.vault_initialized || false });
+    if (!users || users.length === 0) {
+      const { error: insertError } = await supabase
+        .from('users')
+        .insert({
+          id: userId,
+          vault_initialized: false,
+        });
+      
+      if (insertError) throw insertError;
+      
+      return NextResponse.json({ initialized: false });
+    }
+
+    return NextResponse.json({ initialized: users[0]?.vault_initialized || false });
   } catch (error) {
     console.error('Check init error:', error);
     return NextResponse.json(
