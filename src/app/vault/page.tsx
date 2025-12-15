@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   encryptData,
@@ -32,7 +31,6 @@ interface VaultItem {
 }
 
 export default function VaultPage() {
-  const { user } = useAuth();
   const router = useRouter();
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [masterPassword, setMasterPassword] = useState('');
@@ -83,7 +81,7 @@ export default function VaultPage() {
         return;
       }
 
-      const response = await fetch(`/api/vault/list?userId=${user?.id}`);
+      const response = await fetch(`/api/vault/list`);
       const data = await response.json();
 
       if (data.success) {
@@ -116,7 +114,6 @@ export default function VaultPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user?.id,
           platformName: newVault.platformName,
           accountIdentifier: newVault.accountIdentifier,
           encryptedApiKey: encryptedKey.encrypted,
@@ -133,7 +130,7 @@ export default function VaultPage() {
       const data = await response.json();
 
       if (data.success) {
-        const listResponse = await fetch(`/api/vault/list?userId=${user?.id}`);
+        const listResponse = await fetch(`/api/vault/list`);
         const listData = await listResponse.json();
         setVaults(listData.vaults);
         setShowAddForm(false);
@@ -209,7 +206,7 @@ export default function VaultPage() {
       const response = await fetch('/api/vault/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vaultId, userId: user?.id }),
+        body: JSON.stringify({ vaultId }),
       });
 
       if (response.ok) {
@@ -219,8 +216,6 @@ export default function VaultPage() {
       setError('Failed to delete vault');
     }
   };
-
-  if (!user) return null;
 
   if (!isUnlocked) {
     return (
@@ -294,10 +289,10 @@ export default function VaultPage() {
           </div>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/')}
               className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors"
             >
-              Dashboard
+              Home
             </button>
             <button
               onClick={lockVault}
