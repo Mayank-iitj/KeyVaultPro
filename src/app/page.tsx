@@ -1,4 +1,5 @@
 import WorkflowDemo from '@/components/WorkflowDemo';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -9,11 +10,17 @@ export default function Home() {
             <span className="mr-2">🔐</span>
             <span className="text-white">API Key Manager</span>
           </a>
-          <nav className="flex gap-6">
+          <nav className="flex gap-6 items-center">
             <a href="#demo" className="text-zinc-400 hover:text-indigo-400 transition-colors">Live Demo</a>
             <a href="#features" className="text-zinc-400 hover:text-indigo-400 transition-colors">Features</a>
             <a href="#quickstart" className="text-zinc-400 hover:text-indigo-400 transition-colors">Quick Start</a>
             <a href="https://mayyanks.app" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-indigo-400 transition-colors">Author</a>
+            <Link href="/login" className="px-4 py-2 text-sm text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-lg transition-colors">
+              Login
+            </Link>
+            <Link href="/signup" className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
+              Sign Up
+            </Link>
           </nav>
         </div>
       </header>
