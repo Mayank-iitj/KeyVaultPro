@@ -15,6 +15,9 @@ export default function Home() {
             <a href="#features" className="text-zinc-400 hover:text-indigo-400 transition-colors">Features</a>
             <a href="#quickstart" className="text-zinc-400 hover:text-indigo-400 transition-colors">Quick Start</a>
             <a href="https://mayyanks.app" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-indigo-400 transition-colors">Author</a>
+            <Link href="/vault" className="px-4 py-2 text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-lg font-medium transition-colors flex items-center gap-2">
+              🔐 Secure Vault
+            </Link>
             <Link href="/login" className="px-4 py-2 text-sm text-zinc-300 hover:text-white border border-zinc-700 hover:border-zinc-500 rounded-lg transition-colors">
               Login
             </Link>
