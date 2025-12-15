@@ -30,6 +30,9 @@ export async function POST(request: NextRequest) {
         .from('users')
         .insert({
           id: userId,
+          email: `vault-user-${userId.slice(0, 8)}@temp.local`,
+          username: `vault-user-${userId.slice(0, 8)}`,
+          password_hash: 'temp',
           vault_initialized: false,
         });
       
