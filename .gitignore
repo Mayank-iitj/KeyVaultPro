@@ -28,10 +28,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # env files
-# .env # Removed by Orchids to allow .env files
-# .env*.local # Removed by Orchids to allow .env files
-# .env.production # Removed by Orchids to allow .env files
-
+.env
+.env.local
+.env.*.local
+.env.production
 # vercel
 .vercel
 
